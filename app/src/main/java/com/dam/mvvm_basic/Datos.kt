@@ -45,4 +45,15 @@ enum class EstadosAuxiliares(val txt: String) {
     AUX1(txt = "aux1"),
     AUX2(txt = "aux2"),
     AUX3(txt = "aux3"),
+
+    CUENTA_5(txt = "5"),
+    CUENTA_4(txt = "4"),
+    CUENTA_3(txt = "3"),
+    CUENTA_2(txt = "2"),
+    CUENTA_1(txt = "1"),
+
+    AUX_FINAL (txt = "AuxFinal"),
+
+
+
 }

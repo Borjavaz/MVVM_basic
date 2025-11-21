@@ -1,81 +1,88 @@
+
+
 package com.dam.mvvm_basic
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MyViewModel(): ViewModel() {
 
-    // etiqueta para logcat
     private val TAG_LOG = "miDebug"
-
-    // estados del juego
-    // usamos LiveData para que la IU se actualice
-    // patron de diseño observer
     val estadoActual = MutableStateFlow(Estados.INICIO)
-
-    // este va a ser nuestra lista para la secuencia random
-    // usamos mutable, ya que la queremos modificar
     var _numbers = MutableStateFlow(0)
 
-    // inicializamos variables cuando instanciamos
+    private val _cuentaAtras = MutableStateFlow(5)
+    val cuentaAtras: StateFlow<Int> = _cuentaAtras
+
+    private var cuentaAtrasJob: Job? = null
+
     init {
-        // estado inicial
         Log.d(TAG_LOG, "Inicializamos ViewModel - Estado: ${estadoActual.value}")
     }
 
-    /**
-     * crear entero random
-     */
     fun crearRandom() {
-        // cambiamos estado, por lo tanto la IU se actualiza
+        cuentaAtrasJob?.cancel()
+        _cuentaAtras.value = 5
+
         estadoActual.value = Estados.GENERANDO
         _numbers.value = (0..3).random()
         Log.d(TAG_LOG, "creamos random ${_numbers.value} - Estado: ${estadoActual.value}")
         actualizarNumero(_numbers.value)
+
+        iniciarCuentaAtras()
     }
 
     fun actualizarNumero(numero: Int) {
         Log.d(TAG_LOG, "actualizamos numero en Datos - Estado: ${estadoActual.value}")
         Datos.numero = numero
-        // cambiamos estado, por lo tanto la IU se actualiza
         estadoActual.value = Estados.ADIVINANDO
     }
 
-    /**
-     * comprobar si el boton pulsado es el correcto
-     * @param ordinal: Int numero de boton pulsado
-     * @return Boolean si coincide TRUE, si no FALSE
-     */
-    fun comprobar(ordinal: Int): Boolean {
-        Log.d(TAG_LOG, "comprobamos - Estado: ${estadoActual.value}")
+    //Esta funcion sirve para iniciar la cuenta atras, desde 5 a 1
+    private fun iniciarCuentaAtras() {
+        cuentaAtrasJob = viewModelScope.launch {
+            //For para la cuentra atras en orden descendiente, de 5 a 1
+            for (i in 5 downTo 1) {
+                _cuentaAtras.value = i
+                Log.d(TAG_LOG, "Cuenta atrás: $i")
+                delay(1000)
+            }
+            //Este if sirve para comprobar si el tiempo se acabó.
+            //Si el tiempo se acabó, el estado vuelve a ser INICIO
+            if (estadoActual.value == Estados.ADIVINANDO) {
+                Log.d(TAG_LOG, "Tiempo agotado. Volviendo a INICIO.")
+                estadoActual.value = Estados.INICIO
+            }
+        }
+    }
+
+    fun comprobarCorrecto(ordinal: Int, enum_color: Colores): Boolean {
+        cuentaAtrasJob?.cancel()
+
+        Log.d(TAG_LOG, "comprobamos color ${enum_color.txt} con ordinal ${ordinal}")
         return if (ordinal == Datos.numero) {
             Log.d(TAG_LOG, "es correcto")
             estadoActual.value = Estados.INICIO
             Log.d(TAG_LOG, "GANAMOS - Estado: ${estadoActual.value}")
-            //lanzamos estados auxiliares en paralelo
             estadosAuxiliares("Ganador")
             true
         } else {
             Log.d(TAG_LOG, "no es correcto")
             estadoActual.value = Estados.ADIVINANDO
             Log.d(TAG_LOG, "otro intento - Estado: ${estadoActual.value}")
-            //lanzamos estados auxiliares en paralelo
             estadosAuxiliares("Fallo")
             false
         }
     }
 
-    /**
-     * Corutina que lanza estados auxiliares
-     */
     fun estadosAuxiliares(msg: String = "") {
         viewModelScope.launch {
-            // inicializamos estado auxiliar
-            // los recorremos
             var estadoAux = EstadosAuxiliares.AUX1
             Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
             Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
