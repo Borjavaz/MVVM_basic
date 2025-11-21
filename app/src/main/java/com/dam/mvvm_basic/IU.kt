@@ -25,15 +25,15 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.collectAsState
 
-/**
- * Interfaz de usuario
- * Modificado desde Code
- */
 
 @Composable
 fun IU(miViewModel: MyViewModel) {
     // para que sea mas facil la etiqueta del log
     // val TAG_LOG = "miDebug"
+
+    // Recoger estados del ViewModel
+    val estadoAuxiliar by miViewModel.estadoAuxiliar.collectAsState()
+    val mensajeAuxiliar by miViewModel.mensajeAuxiliar.collectAsState()
 
     // botones en horizontal
     Column(
@@ -41,6 +41,15 @@ fun IU(miViewModel: MyViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround)
     {
+        // Mostrar información de estados auxiliares
+        if (estadoAuxiliar != null) {
+            Text(
+                text = "$mensajeAuxiliar - ${estadoAuxiliar!!.txt}",
+                fontSize = 16.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
         Column {
             Row {
                 // creo un boton rojo
@@ -71,7 +80,6 @@ fun Boton(miViewModel: MyViewModel, enum_color: Colores) {
     // variable para el estado del boton
     var _activo = miViewModel.estadoActual.collectAsState().value.boton_activo
 
-
     // separador entre botones
     Spacer(modifier = Modifier.size(10.dp))
 
@@ -82,7 +90,7 @@ fun Boton(miViewModel: MyViewModel, enum_color: Colores) {
         onClick = {
             Log.d(TAG_LOG, "Dentro del boton: ${enum_color.ordinal}")
             miViewModel.comprobar(enum_color.ordinal)
-                  },
+        },
         modifier = Modifier
             .size((80).dp, (40).dp)
     ) {

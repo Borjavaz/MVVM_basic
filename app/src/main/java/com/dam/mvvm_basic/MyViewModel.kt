@@ -21,6 +21,10 @@ class MyViewModel(): ViewModel() {
     // usamos mutable, ya que la queremos modificar
     var _numbers = MutableStateFlow(0)
 
+    // Estado auxiliar para mostrar en la UI
+    val estadoAuxiliar = MutableStateFlow<EstadosAuxiliares?>(null)
+    val mensajeAuxiliar = MutableStateFlow("")
+
     // inicializamos variables cuando instanciamos
     init {
         // estado inicial
@@ -76,18 +80,27 @@ class MyViewModel(): ViewModel() {
         viewModelScope.launch {
             // inicializamos estado auxiliar
             // los recorremos
-            var estadoAux = EstadosAuxiliares.AUX1
-            Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
-            Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
+            estadoAuxiliar.value = EstadosAuxiliares.AUX1
+            mensajeAuxiliar.value = msg
+            Log.d(TAG_LOG, "estado (corutina): ${estadoAuxiliar.value}")
+            Log.d(TAG_LOG, "mensaje (corutina): $msg")
             delay(1500)
-            estadoAux = EstadosAuxiliares.AUX2
-            Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
-            Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
+
+            estadoAuxiliar.value = EstadosAuxiliares.AUX2
+            mensajeAuxiliar.value = msg
+            Log.d(TAG_LOG, "estado (corutina): ${estadoAuxiliar.value}")
+            Log.d(TAG_LOG, "mensaje (corutina): $msg")
             delay(1500)
-            estadoAux = EstadosAuxiliares.AUX3
-            Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
-            Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
+
+            estadoAuxiliar.value = EstadosAuxiliares.AUX3
+            mensajeAuxiliar.value = msg
+            Log.d(TAG_LOG, "estado (corutina): ${estadoAuxiliar.value}")
+            Log.d(TAG_LOG, "mensaje (corutina): $msg")
             delay(1500)
+
+            // Limpiar estados auxiliares al finalizar
+            estadoAuxiliar.value = null
+            mensajeAuxiliar.value = ""
         }
     }
 }
