@@ -75,18 +75,28 @@ class MyViewModel(): ViewModel() {
     fun estadosAuxiliares(msg: String = "") {
         viewModelScope.launch {
             // inicializamos estado auxiliar
-            // los recorremos
             var estadoAux = EstadosAuxiliares.AUX1
-            Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
-            Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
+
+            //  AUX1 sin modificar
+            val msgAux1 = estadoAux.modificar(msg)
+            Log.d(TAG_LOG, "estado (corutina): ${estadoAux.txt}")
+            Log.d(TAG_LOG, "mensaje (corutina): ${msgAux1}")
             delay(1500)
+
             estadoAux = EstadosAuxiliares.AUX2
-            Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
-            Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
+
+            // AUX2 a minúsculas
+            val msgAux2 = estadoAux.modificar(msg)
+            Log.d(TAG_LOG, "estado (corutina): ${estadoAux.txt}")
+            Log.d(TAG_LOG, "mensaje (corutina): ${msgAux2}")
             delay(1500)
+
             estadoAux = EstadosAuxiliares.AUX3
-            Log.d(TAG_LOG, "estado (corutina): ${estadoAux}")
-            Log.d(TAG_LOG, "mensaje (corutina): ${msg}")
+
+            // AUX2 a mayusculas
+            val msgAux3 = estadoAux.modificar(msg)
+            Log.d(TAG_LOG, "estado (corutina): ${estadoAux.txt}")
+            Log.d(TAG_LOG, "mensaje (corutina): ${msgAux3}")
             delay(1500)
         }
     }

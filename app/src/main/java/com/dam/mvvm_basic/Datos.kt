@@ -37,12 +37,19 @@ enum class Estados(val start_activo: Boolean, val boton_activo: Boolean) {
     ADIVINANDO(start_activo = false, boton_activo = true)
 }
 
+
 /**
  * Estados auxiliares para corutinas en el ViewModel
  * @param txt: String nombre del estado
+ * @param modificar: (String) -> String función propia que procesa un String y devuelve un String (lambda)
  */
-enum class EstadosAuxiliares(val txt: String) {
-    AUX1(txt = "aux1"),
-    AUX2(txt = "aux2"),
-    AUX3(txt = "aux3"),
+enum class EstadosAuxiliares(val txt: String, val modificar: (String) -> String) {
+    //AUX1 sin modificarla
+    AUX1(txt = "aux1", modificar = { msg -> msg }),
+
+    //AUX2: la lambda convierte la string a minúsculas
+    AUX2(txt = "aux2", modificar = { msg -> msg.lowercase() }),
+
+    // En AUX3: la lambda convierte la string a mayúsculas
+    AUX3(txt = "aux3", modificar = { msg -> msg.uppercase() }),
 }
