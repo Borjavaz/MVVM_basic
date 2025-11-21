@@ -11,12 +11,45 @@ object Datos {
 
 /**
  * Colores utilizados
+ * color: Color color normal
+ * color_suave: Color color suave para el parpadeo, por defecto Transparente
+ * txt: String nombre del color
  */
-
-enum class Colores(val color: Color, val txt: String) {
+enum class Colores(val color: Color, val color_suave: Color = Color.Transparent, val txt: String) {
     CLASE_ROJO(color = Color.Red, txt = "roxo"),
     CLASE_VERDE(color = Color.Green, txt = "verde"),
     CLASE_AZUL(color = Color.Blue, txt = "azul"),
     CLASE_AMARILLO(color = Color.Yellow, txt = "melo"),
-    CLASE_START(color = Color.LightGray, txt = "Start")
+    CLASE_START(color = Color.Magenta, color_suave = Color.Red, txt = "Start")
+}
+
+/**
+ * Estados del juego
+ * INICIO: estado inicial
+ * GENERANDO: generando numero random
+ * ADIVINANDO: adivinando el numero
+ * @param start_activo: Boolean si el boton Start esta activo
+ * @param boton_activo: Boolean si los botones de colores estan activos
+ */
+enum class Estados(val start_activo: Boolean, val boton_activo: Boolean) {
+    INICIO(start_activo = true, boton_activo = false),
+    GENERANDO(start_activo = false, boton_activo = false),
+    ADIVINANDO(start_activo = false, boton_activo = true)
+}
+
+
+/**
+ * Estados auxiliares para corutinas en el ViewModel
+ * @param txt: String nombre del estado
+ * @param modificar: (String) -> String función propia que procesa un String y devuelve un String (lambda)
+ */
+enum class EstadosAuxiliares(val txt: String, val modificar: (String) -> String) {
+    //AUX1 sin modificarla
+    AUX1(txt = "aux1", modificar = { msg -> msg }),
+
+    //AUX2: la lambda convierte la string a minúsculas
+    AUX2(txt = "aux2", modificar = { msg -> msg.lowercase() }),
+
+    // En AUX3: la lambda convierte la string a mayúsculas
+    AUX3(txt = "aux3", modificar = { msg -> msg.uppercase() }),
 }
